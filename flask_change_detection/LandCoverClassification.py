@@ -1,62 +1,70 @@
 import numpy as np
 import rasterio
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
-import joblib
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import warnings
+from rasterio.errors import NotGeoreferencedWarning
+
+# Suppress the NotGeoreferencedWarning
+warnings.filterwarnings('ignore', category=NotGeoreferencedWarning)
+
+# Define land cover classes
+LAND_COVER_CLASSES = ['Water', 'Vegetation', 'Urban', 'Bare Soil', 'Forest']
 
 def extract_features(image_path):
     with rasterio.open(image_path) as src:
         image = src.read()
         image = np.moveaxis(image, 0, -1)  # Rearrange axes to (height, width, channels)
         features = image.reshape(-1, image.shape[-1])
-    return features
+    return features, image.shape
 
-def train_model(features, labels):
-    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
-    
-    clf = RandomForestClassifier(n_estimators=100, random_state=42)
-    clf.fit(X_train, y_train)
-    
-    y_pred = clf.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"Model Accuracy: {accuracy}")
-    print(classification_report(y_test, y_pred))
-    
-    return clf
+def classify_image(features, n_clusters, original_shape):
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    labels = kmeans.fit_predict(features)
+    classified_image = labels.reshape(original_shape[:2])
+    return classified_image
 
-def classify_image(model, image_path, output_path):
-    with rasterio.open(image_path) as src:
-        image = src.read()
-        image = np.moveaxis(image, 0, -1)
-        features = image.reshape(-1, image.shape[-1])
-        
-        predictions = model.predict(features)
-        classified_image = predictions.reshape(image.shape[0], image.shape[1])
-        
-        profile = src.profile
-        profile.update(dtype=rasterio.uint8, count=1)
-        
-        with rasterio.open(output_path, 'w', **profile) as dst:
-            dst.write(classified_image.astype(rasterio.uint8), 1)
-    
-    return output_path
+def create_legend(n_clusters):
+    class_names = LAND_COVER_CLASSES[:n_clusters]
+    colors = plt.cm.tab10(np.linspace(0, 1, n_clusters))
+    legend_elements = [plt.Rectangle((0, 0), 1, 1, fc=colors[i], label=class_names[i]) for i in range(n_clusters)]
+    return legend_elements
 
-def land_cover_classification(input_image_path, output_image_path):
-    # In a real-world scenario, you would have a separate training dataset
-    # For this example, we'll use the input image for both training and classification
-    features = extract_features(input_image_path)
+def land_cover_classification(input_image_path, output_image_path, n_clusters=5):
+    # Extract features
+    features, original_shape = extract_features(input_image_path)
     
-    # Generate dummy labels for demonstration purposes
-    # In a real scenario, you would have actual ground truth labels
-    labels = np.random.randint(0, 5, size=features.shape[0])
+    # Perform classification
+    classified_image = classify_image(features, n_clusters, original_shape)
     
-    model = train_model(features, labels)
+    # Create a color map
+    cmap = plt.cm.tab10
+    norm = colors.BoundaryNorm(np.arange(n_clusters+1)-0.5, n_clusters)
     
-    # Save the model
-    joblib.dump(model, 'land_cover_model.joblib')
+    # Create the figure and axes
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
     
-    # Classify the image
-    classified_image_path = classify_image(model, input_image_path, output_image_path)
+    # Plot the original image
+    with rasterio.open(input_image_path) as src:
+        original_image = src.read()
+        original_image = np.moveaxis(original_image, 0, -1)
+    ax1.imshow(original_image[:,:,:3])  # Assuming RGB channels are the first three
+    ax1.set_title('Original Image')
+    ax1.axis('off')
     
-    return classified_image_path
+    # Plot the classified image
+    im = ax2.imshow(classified_image, cmap=cmap, norm=norm)
+    ax2.set_title('Classified Image')
+    ax2.axis('off')
+    
+    # Add legend
+    legend_elements = create_legend(n_clusters)
+    ax2.legend(handles=legend_elements, loc='center left', bbox_to_anchor=(1, 0.5))
+    
+    # Adjust layout and save
+    plt.tight_layout()
+    plt.savefig(output_image_path, dpi=200, bbox_inches='tight')
+    plt.close()
+    
+    return output_image_path    
