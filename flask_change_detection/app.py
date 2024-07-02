@@ -7,6 +7,9 @@ import numpy as np
 from LandCoverClassification import land_cover_classification
 import traceback
 import logging
+import rasterio
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
 
 app = Flask(__name__)
 CORS(app)
@@ -123,6 +126,63 @@ def process_land_cover():
             error_message = str(e)
             stack_trace = traceback.format_exc()
             logging.error(f"Error in land cover classification: {error_message}\n{stack_trace}")
+            return jsonify({'error': 'An error occurred during processing. Please check the server logs for details.'}), 500
+    
+    return jsonify({'error': 'Invalid file type'}), 400
+
+@app.route('/api/calculate-ndvi', methods=['POST'])
+def calculate_ndvi():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    image = request.files['image']
+    
+    if image.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    if image and allowed_file(image.filename):
+        filename = secure_filename(image.filename)
+        input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        output_filename = f"ndvi_{os.path.splitext(filename)[0]}.png"
+        output_path = os.path.join(app.config['OUTPUT_FOLDER'], output_filename)
+        
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
+        
+        image.save(input_path)
+        
+        try:
+            with rasterio.open(input_path) as src:
+                num_bands = src.count
+                
+                if num_bands == 1:
+                    # If there's only one band, assume it's already an NDVI image
+                    ndvi = src.read(1)
+                elif num_bands >= 4:
+                    # Assuming Landsat 8 band order
+                    red = src.read(4).astype(float)
+                    nir = src.read(5).astype(float)
+                    
+                    # Avoid division by zero
+                    denominator = (nir + red)
+                    ndvi = np.where(denominator != 0, (nir - red) / denominator, 0)
+                else:
+                    return jsonify({'error': 'Unsupported number of bands. Please use a single-band NDVI image or a multi-band image with at least 4 bands.'}), 400
+                
+                plt.figure(figsize=(10, 8))
+                plt.imshow(ndvi, cmap='RdYlGn', vmin=-1, vmax=1)
+                plt.colorbar(label='NDVI')
+                plt.title('NDVI')
+                plt.axis('off')
+                plt.tight_layout()
+                plt.savefig(output_path, dpi=300, bbox_inches='tight')
+                plt.close()
+            
+            return jsonify({'ndviImage': os.path.basename(output_path)})
+        except Exception as e:
+            error_message = str(e)
+            stack_trace = traceback.format_exc()
+            logging.error(f"Error in NDVI calculation: {error_message}\n{stack_trace}")
             return jsonify({'error': 'An error occurred during processing. Please check the server logs for details.'}), 500
     
     return jsonify({'error': 'Invalid file type'}), 400
