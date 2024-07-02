@@ -4,23 +4,12 @@ import axios from 'axios';
 function VegetationMonitoring() {
   const [redBand, setRedBand] = useState(null);
   const [nirBand, setNirBand] = useState(null);
-  const [ndviImage, setNdviImage] = useState(null);
-  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleRedBandChange = (event) => {
-    setRedBand(event.target.files[0]);
-  };
-
-  const handleNirBandChange = (event) => {
-    setNirBand(event.target.files[0]);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!redBand || !nirBand) {
-      setError('Please select both red and near-infrared band images');
-      return;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
     const formData = new FormData();
     formData.append('red_band', redBand);
@@ -28,16 +17,13 @@ function VegetationMonitoring() {
 
     try {
       const response = await axios.post('http://localhost:5000/api/calculate-ndvi', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-
-      setNdviImage(`http://localhost:5000/output/${response.data.ndviImage}`);
-      setError(null);
+      setResult(response.data);
     } catch (error) {
-      setError('An error occurred while processing the images');
       console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,20 +32,23 @@ function VegetationMonitoring() {
       <h2>Vegetation Monitoring (NDVI)</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="red-band">Red Band Image:</label>
-          <input type="file" id="red-band" onChange={handleRedBandChange} accept=".tif,.tiff" />
+          <label htmlFor="redBand">Red Band Image:</label>
+          <input type="file" id="redBand" onChange={(e) => setRedBand(e.target.files[0])} required />
         </div>
         <div>
-          <label htmlFor="nir-band">Near-Infrared Band Image:</label>
-          <input type="file" id="nir-band" onChange={handleNirBandChange} accept=".tif,.tiff" />
+          <label htmlFor="nirBand">NIR Band Image:</label>
+          <input type="file" id="nirBand" onChange={(e) => setNirBand(e.target.files[0])} required />
         </div>
-        <button type="submit">Calculate NDVI</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Processing...' : 'Calculate NDVI'}
+        </button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {ndviImage && (
-        <div>
+      {result && (
+        <div className="results">
           <h3>NDVI Result:</h3>
-          <img src={ndviImage} alt="NDVI" style={{ maxWidth: '100%' }} />
+          <div className="image-container">
+            <img src={`http://localhost:5000${result.ndviImage}`} alt="NDVI" />
+          </div>
         </div>
       )}
     </div>

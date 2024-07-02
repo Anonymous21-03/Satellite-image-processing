@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import warnings
 from rasterio.errors import NotGeoreferencedWarning
+import cv2
 
 # Suppress the NotGeoreferencedWarning
 warnings.filterwarnings('ignore', category=NotGeoreferencedWarning)
@@ -43,13 +44,12 @@ def land_cover_classification(input_image_path, output_image_path, n_clusters=5)
     norm = colors.BoundaryNorm(np.arange(n_clusters+1)-0.5, n_clusters)
     
     # Create the figure and axes
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
     
     # Plot the original image
-    with rasterio.open(input_image_path) as src:
-        original_image = src.read()
-        original_image = np.moveaxis(original_image, 0, -1)
-    ax1.imshow(original_image[:,:,:3])  # Assuming RGB channels are the first three
+    original_image = cv2.imread(input_image_path)
+    original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+    ax1.imshow(original_image)
     ax1.set_title('Original Image')
     ax1.axis('off')
     
@@ -67,4 +67,8 @@ def land_cover_classification(input_image_path, output_image_path, n_clusters=5)
     plt.savefig(output_image_path, dpi=200, bbox_inches='tight')
     plt.close()
     
-    return output_image_path    
+    # Ensure the image is saved in a format that can be easily displayed
+    saved_image = cv2.imread(output_image_path)
+    cv2.imwrite(output_image_path, saved_image, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    
+    return output_image_path

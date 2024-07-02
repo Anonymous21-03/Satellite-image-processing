@@ -17,6 +17,7 @@ CORS(app)
 UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'output'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'tif', 'tiff'}
+MAX_IMAGE_SIZE = (1024, 1024)  # Maximum width and height for resized images
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
@@ -24,17 +25,29 @@ app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def resize_image(image, max_size):
+    h, w = image.shape[:2]
+    if h > max_size[1] or w > max_size[0]:
+        scale = min(max_size[0] / w, max_size[1] / h)
+        new_size = (int(w * scale), int(h * scale))
+        return cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
+    return image
+
 def detect_change(image1_path, image2_path, out_dir):
     # Read images
     img1 = cv2.imread(image1_path)
     img2 = cv2.imread(image2_path)
+
+    # Resize images
+    img1 = resize_image(img1, MAX_IMAGE_SIZE)
+    img2 = resize_image(img2, MAX_IMAGE_SIZE)
 
     # Ensure images are the same size
     img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
 
     # Compute difference
     diff = cv2.absdiff(img1, img2)
-    cv2.imwrite(os.path.join(out_dir, 'difference.jpg'), diff)
+    cv2.imwrite(os.path.join(out_dir, 'difference.jpg'), diff, [cv2.IMWRITE_JPEG_QUALITY, 85])
 
     # Convert to grayscale
     gray_diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
@@ -53,15 +66,15 @@ def detect_change(image1_path, image2_path, out_dir):
     change_map = (change_map - change_map.min()) / (change_map.max() - change_map.min()) * 255
     change_map = change_map.astype(np.uint8)
 
-    cv2.imwrite(os.path.join(out_dir, 'ChangeMap.jpg'), change_map)
+    cv2.imwrite(os.path.join(out_dir, 'ChangeMap.jpg'), change_map, [cv2.IMWRITE_JPEG_QUALITY, 85])
 
     # Apply morphological operations (if needed)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     close_map = cv2.morphologyEx(change_map, cv2.MORPH_CLOSE, kernel)
-    cv2.imwrite(os.path.join(out_dir, 'CloseMap.jpg'), close_map)
+    cv2.imwrite(os.path.join(out_dir, 'CloseMap.jpg'), close_map, [cv2.IMWRITE_JPEG_QUALITY, 85])
 
     open_map = cv2.morphologyEx(close_map, cv2.MORPH_OPEN, kernel)
-    cv2.imwrite(os.path.join(out_dir, 'OpenMap.jpg'), open_map)
+    cv2.imwrite(os.path.join(out_dir, 'OpenMap.jpg'), open_map, [cv2.IMWRITE_JPEG_QUALITY, 85])
 
 @app.route('/api/detect-change', methods=['POST'])
 def process_images():
@@ -90,10 +103,10 @@ def process_images():
         detect_change(image1_path, image2_path, app.config['OUTPUT_FOLDER'])
         
         return jsonify({
-            'difference': 'difference.jpg',
-            'changeMap': 'ChangeMap.jpg',
-            'closeMap': 'CloseMap.jpg',
-            'openMap': 'OpenMap.jpg'
+            'difference': '/output/difference.jpg',
+            'changeMap': '/output/ChangeMap.jpg',
+            'closeMap': '/output/CloseMap.jpg',
+            'openMap': '/output/OpenMap.jpg'
         })
     
     return jsonify({'error': 'Invalid file type'}), 400
@@ -120,8 +133,13 @@ def process_land_cover():
         image.save(input_path)
         
         try:
+            # Resize the input image before classification
+            img = cv2.imread(input_path)
+            img = resize_image(img, MAX_IMAGE_SIZE)
+            cv2.imwrite(input_path, img)
+            
             classified_image_path = land_cover_classification(input_path, output_path, n_clusters=5)
-            return jsonify({'classifiedImage': os.path.basename(classified_image_path)})
+            return jsonify({'classifiedImage': f'/output/{os.path.basename(classified_image_path)}'})
         except Exception as e:
             error_message = str(e)
             stack_trace = traceback.format_exc()
@@ -162,6 +180,10 @@ def calculate_ndvi():
                 red = src_red.read(1).astype(float)
                 nir = src_nir.read(1).astype(float)
                 
+                # Resize the images
+                red = cv2.resize(red, MAX_IMAGE_SIZE, interpolation=cv2.INTER_AREA)
+                nir = cv2.resize(nir, MAX_IMAGE_SIZE, interpolation=cv2.INTER_AREA)
+                
                 # Ensure the shapes match
                 if red.shape != nir.shape:
                     return jsonify({'error': 'The red and NIR images have different dimensions'}), 400
@@ -178,10 +200,10 @@ def calculate_ndvi():
                 plt.title('NDVI')
                 plt.axis('off')
                 plt.tight_layout()
-                plt.savefig(output_path, dpi=300, bbox_inches='tight')
+                plt.savefig(output_path, dpi=150, bbox_inches='tight')
                 plt.close()
             
-            return jsonify({'ndviImage': os.path.basename(output_path)})
+            return jsonify({'ndviImage': f'/output/{output_filename}'})
         except Exception as e:
             error_message = str(e)
             stack_trace = traceback.format_exc()
