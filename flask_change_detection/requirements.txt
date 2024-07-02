@@ -4,3 +4,5 @@ opencv-python==4.5.3.56
 scikit-learn==0.24.2
 scikit-image==0.18.2
 numpy==1.21.2
+rasterio==1.2.10
+joblib==1.0.1

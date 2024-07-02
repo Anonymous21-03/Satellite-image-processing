@@ -3,13 +3,14 @@ from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename
 import DetectChange
+import LandCoverClassification
 
 app = Flask(__name__)
 CORS(app)
 
 UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'output'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'tif', 'tiff'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
@@ -50,6 +51,37 @@ def detect_change():
             'changeMap': 'ChangeMap.jpg',
             'closeMap': 'CloseMap.jpg',
             'openMap': 'OpenMap.jpg'
+        })
+    
+    return jsonify({'error': 'Invalid file type'}), 400
+
+@app.route('/api/land-cover-classification', methods=['POST'])
+def land_cover_classification():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    image = request.files['image']
+    
+    if image.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    if image and allowed_file(image.filename):
+        filename = secure_filename(image.filename)
+        
+        input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        output_path = os.path.join(app.config['OUTPUT_FOLDER'], 'classified_' + filename)
+        
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
+        
+        image.save(input_path)
+        
+        # Call your LandCoverClassification script
+        classified_image_path = LandCoverClassification.land_cover_classification(input_path, output_path)
+        
+        # Return the path of the generated classified image
+        return jsonify({
+            'classifiedImage': os.path.basename(classified_image_path)
         })
     
     return jsonify({'error': 'Invalid file type'}), 400
