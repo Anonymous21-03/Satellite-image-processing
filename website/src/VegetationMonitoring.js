@@ -2,23 +2,29 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function VegetationMonitoring() {
-  const [file, setFile] = useState(null);
+  const [redBand, setRedBand] = useState(null);
+  const [nirBand, setNirBand] = useState(null);
   const [ndviImage, setNdviImage] = useState(null);
   const [error, setError] = useState(null);
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+  const handleRedBandChange = (event) => {
+    setRedBand(event.target.files[0]);
+  };
+
+  const handleNirBandChange = (event) => {
+    setNirBand(event.target.files[0]);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!file) {
-      setError('Please select a file');
+    if (!redBand || !nirBand) {
+      setError('Please select both red and near-infrared band images');
       return;
     }
 
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('red_band', redBand);
+    formData.append('nir_band', nirBand);
 
     try {
       const response = await axios.post('http://localhost:5000/api/calculate-ndvi', formData, {
@@ -30,7 +36,7 @@ function VegetationMonitoring() {
       setNdviImage(`http://localhost:5000/output/${response.data.ndviImage}`);
       setError(null);
     } catch (error) {
-      setError('An error occurred while processing the image');
+      setError('An error occurred while processing the images');
       console.error('Error:', error);
     }
   };
@@ -39,7 +45,14 @@ function VegetationMonitoring() {
     <div>
       <h2>Vegetation Monitoring (NDVI)</h2>
       <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} accept=".tif,.tiff" />
+        <div>
+          <label htmlFor="red-band">Red Band Image:</label>
+          <input type="file" id="red-band" onChange={handleRedBandChange} accept=".tif,.tiff" />
+        </div>
+        <div>
+          <label htmlFor="nir-band">Near-Infrared Band Image:</label>
+          <input type="file" id="nir-band" onChange={handleNirBandChange} accept=".tif,.tiff" />
+        </div>
         <button type="submit">Calculate NDVI</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}

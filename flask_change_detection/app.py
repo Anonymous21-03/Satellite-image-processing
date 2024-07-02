@@ -132,42 +132,45 @@ def process_land_cover():
 
 @app.route('/api/calculate-ndvi', methods=['POST'])
 def calculate_ndvi():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
+    if 'red_band' not in request.files or 'nir_band' not in request.files:
+        return jsonify({'error': 'Both red and near-infrared band images are required'}), 400
     
-    image = request.files['image']
+    red_image = request.files['red_band']
+    nir_image = request.files['nir_band']
     
-    if image.filename == '':
+    if red_image.filename == '' or nir_image.filename == '':
         return jsonify({'error': 'No selected file'}), 400
     
-    if image and allowed_file(image.filename):
-        filename = secure_filename(image.filename)
-        input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        output_filename = f"ndvi_{os.path.splitext(filename)[0]}.png"
+    if red_image and nir_image and allowed_file(red_image.filename) and allowed_file(nir_image.filename):
+        red_filename = secure_filename(red_image.filename)
+        nir_filename = secure_filename(nir_image.filename)
+        
+        red_path = os.path.join(app.config['UPLOAD_FOLDER'], red_filename)
+        nir_path = os.path.join(app.config['UPLOAD_FOLDER'], nir_filename)
+        
+        output_filename = f"ndvi_result.png"
         output_path = os.path.join(app.config['OUTPUT_FOLDER'], output_filename)
         
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
         os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
         
-        image.save(input_path)
+        red_image.save(red_path)
+        nir_image.save(nir_path)
         
         try:
-            with rasterio.open(input_path) as src:
-                num_bands = src.count
+            with rasterio.open(red_path) as src_red, rasterio.open(nir_path) as src_nir:
+                red = src_red.read(1).astype(float)
+                nir = src_nir.read(1).astype(float)
                 
-                if num_bands == 1:
-                    # If there's only one band, assume it's already an NDVI image
-                    ndvi = src.read(1)
-                elif num_bands >= 4:
-                    # Assuming Landsat 8 band order
-                    red = src.read(4).astype(float)
-                    nir = src.read(5).astype(float)
-                    
-                    # Avoid division by zero
-                    denominator = (nir + red)
-                    ndvi = np.where(denominator != 0, (nir - red) / denominator, 0)
-                else:
-                    return jsonify({'error': 'Unsupported number of bands. Please use a single-band NDVI image or a multi-band image with at least 4 bands.'}), 400
+                # Ensure the shapes match
+                if red.shape != nir.shape:
+                    return jsonify({'error': 'The red and NIR images have different dimensions'}), 400
+                
+                # Calculate NDVI
+                ndvi = np.where((nir + red) != 0, (nir - red) / (nir + red), 0)
+                
+                # Mask out invalid values
+                ndvi = np.ma.masked_outside(ndvi, -1, 1)
                 
                 plt.figure(figsize=(10, 8))
                 plt.imshow(ndvi, cmap='RdYlGn', vmin=-1, vmax=1)
