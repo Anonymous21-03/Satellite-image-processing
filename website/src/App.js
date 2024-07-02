@@ -10,10 +10,12 @@ function App() {
 
   const handleImage1Change = (e) => {
     setImage1(e.target.files[0]);
+    setResults(null); // Reset results when a new image is selected
   };
 
   const handleImage2Change = (e) => {
     setImage2(e.target.files[0]);
+    setResults(null); // Reset results when a new image is selected
   };
 
   const handleSubmit = async (e) => {
@@ -24,6 +26,7 @@ function App() {
     }
 
     setLoading(true);
+    setResults(null); // Reset results before new submission
     const formData = new FormData();
     formData.append('image1', image1);
     formData.append('image2', image2);
@@ -63,19 +66,19 @@ function App() {
         <div className="results">
           <h2>Results:</h2>
           <div className="image-container">
-            <img src={`http://localhost:5000/output/${results.difference}`} alt="Difference" />
+            <img src={`http://localhost:5000/output/${results.difference}?${new Date().getTime()}`} alt="Difference" />
             <p>Difference</p>
           </div>
           <div className="image-container">
-            <img src={`http://localhost:5000/output/${results.changeMap}`} alt="Change Map" />
+            <img src={`http://localhost:5000/output/${results.changeMap}?${new Date().getTime()}`} alt="Change Map" />
             <p>Change Map</p>
           </div>
           <div className="image-container">
-            <img src={`http://localhost:5000/output/${results.closeMap}`} alt="Close Map" />
+            <img src={`http://localhost:5000/output/${results.closeMap}?${new Date().getTime()}`} alt="Close Map" />
             <p>Close Map</p>
           </div>
           <div className="image-container">
-            <img src={`http://localhost:5000/output/${results.openMap}`} alt="Open Map" />
+            <img src={`http://localhost:5000/output/${results.openMap}?${new Date().getTime()}`} alt="Open Map" />
             <p>Open Map</p>
           </div>
         </div>
