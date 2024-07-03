@@ -1,0 +1,189 @@
+.navbar {
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: transparent;
+  transition: background-color 0.3s ease, background-color 0.3s ease hover;
+  z-index: 2;
+  background-color: black;
+}
+
+.navbar.scrolled {
+  background-color: #00090ff8;
+}
+
+.logo {
+  width: 15%;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+}
+
+.mid-options {
+  width: 55%;
+  padding: 4%;
+  margin: 0 auto;
+}
+
+.mid-options,
+.right-options {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  justify-content: center;
+}
+
+.mid-options li,
+.right-options li {
+  display: inline-flex;
+  align-items: center;
+  padding: 2% 2%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+  padding-bottom: 2%;
+  margin: 0% 6%;
+}
+
+.right-options {
+  width: 30%;
+  margin: auto 0 auto auto;
+  justify-content: flex-end;
+}
+
+.home .fa-home,
+.about .fa-question-circle,
+.upload .fa-upload,
+.compare .fa-code-compare,
+.signup .fa-outline-user,
+.signin .fa-outline-login {
+  margin-right: 5px;
+  font-size: 1.2rem;
+}
+
+.mid-options li:after,
+.right-options li:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  transform: scaleX(0);
+  transition: transform 0.5s ease;
+}
+
+.mid-options li:hover:after,
+.right-options li:hover:after {
+  transform: scaleX(1);
+}
+
+.mid-options li:not(:hover):after,
+.right-options li:not(:hover):after {
+  background-color: transparent;
+}
+
+.mid-options li:hover,
+.right-options li:hover {
+  color: cyan;
+  transform: scaleX(1);
+}
+
+a {
+  text-decoration: none;
+  display: flex;
+}
+
+.user-info {
+  position: relative;
+  display: inline-block;
+}
+
+.username {
+  margin-right: 1rem;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.username::after {
+  content: '\25BC';
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background-color: rgba(128, 128, 128, 0.5);
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  top: calc(100% + 10px); /* Adjust the top position as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  border: 1px solid white;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.dropdown-menu a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.features .fa-beer {
+  margin-right: 5px;
+  font-size: 1.2rem;
+}
+
+.features-dropdown {
+  display: none;
+  position: absolute;
+  background-color: rgba(128, 128, 128, 0.5);
+  min-width: 270%;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  color: white;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.features:hover .features-dropdown {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}

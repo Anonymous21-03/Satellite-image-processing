@@ -1,0 +1,65 @@
+.body-container {
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    width: 100vw;
+    background-image: url('./satbg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+.intro .heading {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+.intro .heading .compname {
+    justify-items: center;
+    text-align: center;
+    font-size: 5rem;
+    padding-bottom: 0.5%;
+    padding-top: 5%;
+}
+
+.intro .heading p {
+    font-size: 1.2rem;
+    padding: 2%;
+    width: 60%;
+    text-align: center;
+    margin: 1% auto;
+}
+
+.intro .heading .getStarted button {
+    padding: 1%;
+    border: 3px solid white;
+    border-radius: 10em;
+    width: 20%;
+    margin: auto;
+    font-weight: bold;
+    background-color: transparent;
+    color: white;
+}
+
+.intro .heading .getStarted button:hover {
+    color: cyan;
+    border-color: cyan;
+    transition: 1s;
+}
