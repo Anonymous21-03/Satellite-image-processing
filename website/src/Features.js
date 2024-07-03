@@ -1,9 +1,11 @@
-import './Features.css';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import './styles/Features.css';
+import backgroundImage from '../images/cosmos-1853491_1280.jpg';
 
 const Features = () => {
   return (
-    <div className='container-feature' id='features'>
+    <div className='container-feature' id='features' style={{backgroundImage: `url(${backgroundImage})`}}>
       <div className='feature'>
         <div className='card'>
           <div className='title'>Land Cover Classification</div>
