@@ -48,19 +48,19 @@ function ChangeDetection() {
           <h3>Results:</h3>
           <div className="image-container">
             <h4>Difference</h4>
-            <img src={`http://localhost:5000/output/${results.difference}`} alt="Difference" />
+            <img src={`http://localhost:5000${results.difference}`} alt="Difference" />
           </div>
           <div className="image-container">
             <h4>Change Map</h4>
-            <img src={`http://localhost:5000/output/${results.changeMap}`} alt="Change Map" />
+            <img src={`http://localhost:5000${results.changeMap}`} alt="Change Map" />
           </div>
           <div className="image-container">
             <h4>Close Map</h4>
-            <img src={`http://localhost:5000/output/${results.closeMap}`} alt="Close Map" />
+            <img src={`http://localhost:5000${results.closeMap}`} alt="Close Map" />
           </div>
           <div className="image-container">
             <h4>Open Map</h4>
-            <img src={`http://localhost:5000/output/${results.openMap}`} alt="Open Map" />
+            <img src={`http://localhost:5000${results.openMap}`} alt="Open Map" />
           </div>
         </div>
       )}
