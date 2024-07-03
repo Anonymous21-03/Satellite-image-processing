@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './Homepage.css';
+import Features from './Features'; // Make sure the path is correct
 
 const Homepage = () => {
-  const scrollToFeatures = event => {
+  const featuresRef = useRef(null);
+
+  const scrollToFeatures = (event) => {
     event.preventDefault();
-    const featuresSection = document.getElementById('features');
-    featuresSection.scrollIntoView({ behavior: 'smooth' });
-  }
+    if (featuresRef.current) {
+      featuresRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className='body-container'>
@@ -27,25 +31,11 @@ const Homepage = () => {
           </div>
         </div>
       </div>
-      <div className='features-preview'>
-        <div className='feature'>
-          <i className='icon fas fa-leaf'></i>
-          <h3>Vegetation Analysis</h3>
-          <p>Advanced algorithms for precise vegetation health assessment</p>
-        </div>
-        <div className='feature'>
-          <i className='icon fas fa-globe'></i>
-          <h3>Land Cover Classification</h3>
-          <p>Accurate mapping of diverse land cover types</p>
-        </div>
-        <div className='feature'>
-          <i className='icon fas fa-chart-line'></i>
-          <h3>Change Detection</h3>
-          <p>Identify and analyze environmental changes over time</p>
-        </div>
+      <div ref={featuresRef}>
+        <Features />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Homepage;

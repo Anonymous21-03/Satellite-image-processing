@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import Homepage from './Pages/Homepage';
 import ChangeDetection from './Pages/ChangeDetection';
 import LandCoverClassification from './Pages/LandCoverClassification';
 import VegetationMonitoring from './Pages/VegetationMonitoring';
@@ -10,26 +11,13 @@ function App() {
   return (
     <div className="App">
       <Navbar />
-      <div className="content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/change-detection" element={<ChangeDetection />} />
-          <Route path="/land-cover-classification" element={<LandCoverClassification />} />
-          <Route path="/vegetation-monitoring" element={<VegetationMonitoring />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/change-detection" element={<ChangeDetection />} />
+        <Route path="/land-cover-classification" element={<LandCoverClassification />} />
+        <Route path="/vegetation-monitoring" element={<VegetationMonitoring />} />
+      </Routes>
     </div>
-  );
-}
-
-function Home() {
-  return (
-    <>
-      <h1>Satellite Image Analysis</h1>
-      <ChangeDetection />
-      <LandCoverClassification />
-      <VegetationMonitoring />
-    </>
   );
 }
 

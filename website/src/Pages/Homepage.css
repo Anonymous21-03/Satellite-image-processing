@@ -1,0 +1,118 @@
+.body-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../images/satbg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    filter: brightness(0.7);
+  }
+  
+  .intro {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6% 1%;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  }
+  
+  /* ... rest of your existing Homepage.css ... */
+  
+  .intro .heading {
+    width: 90%;
+    text-align: center;
+  }
+  
+  .intro .heading .compname {
+    font-size: 5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .intro .heading .tagline {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #00ffff;
+  }
+  
+  .intro .heading .description {
+    font-size: 1.2rem;
+    width: 60%;
+    margin: 1rem auto;
+  }
+  
+  .custom-button {
+    background: transparent;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .custom-button .button-text,
+  .custom-button .hover-text {
+    transition: all 0.3s ease;
+  }
+  
+  .custom-button .hover-text {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+  }
+  
+  .custom-button:hover .button-text {
+    transform: translateY(-100%);
+  }
+  
+  .custom-button:hover .hover-text {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .custom-button:hover {
+    background-color: rgba(0, 255, 255, 0.2);
+  }
+  
+  .features-preview {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 2rem;
+  }
+  
+  .feature {
+    text-align: center;
+    color: white;
+    width: 30%;
+  }
+  
+  .feature .icon {
+    font-size: 3rem;
+    color: #00ffff;
+    margin-bottom: 1rem;
+  }
+  
+  .feature h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .feature p {
+    font-size: 1rem;
+  }
