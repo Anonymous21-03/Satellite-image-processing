@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Styles/LandCoverClassification.css';
+import ImageBox from './ImageBox';
 
 function LandCoverClassification() {
   const [image, setImage] = useState(null);
@@ -26,7 +28,7 @@ function LandCoverClassification() {
   };
 
   return (
-    <div>
+    <div className="land-cover-classification">
       <h2>Land Cover Classification</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -40,9 +42,7 @@ function LandCoverClassification() {
       {result && (
         <div className="results">
           <h3>Result:</h3>
-          <div className="image-container">
-            <img src={`http://localhost:5000${result.classifiedImage}`} alt="Classified Land Cover" />
-          </div>
+          <ImageBox src={`http://localhost:5000${result.classifiedImage}`} alt="Classified Land Cover" />
         </div>
       )}
     </div>

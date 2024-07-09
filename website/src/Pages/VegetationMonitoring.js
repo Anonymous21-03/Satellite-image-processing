@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Styles/VegetationMonitoring.css';
+import ImageBox from './ImageBox';
 
 function VegetationMonitoring() {
   const [redBand, setRedBand] = useState(null);
@@ -28,7 +30,7 @@ function VegetationMonitoring() {
   };
 
   return (
-    <div>
+    <div className="vegetation-monitoring">
       <h2>Vegetation Monitoring (NDVI)</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -46,9 +48,7 @@ function VegetationMonitoring() {
       {result && (
         <div className="results">
           <h3>NDVI Result:</h3>
-          <div className="image-container">
-            <img src={`http://localhost:5000${result.ndviImage}`} alt="NDVI" />
-          </div>
+          <ImageBox src={`http://localhost:5000${result.ndviImage}`} alt="NDVI" />
         </div>
       )}
     </div>

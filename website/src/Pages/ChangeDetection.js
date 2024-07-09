@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Styles/ChangeDetection.css';
+import ImageBox from './ImageBox';
 
 function ChangeDetection() {
   const [image1, setImage1] = useState(null);
@@ -28,7 +30,7 @@ function ChangeDetection() {
   };
 
   return (
-    <div>
+    <div className="change-detection">
       <h2>Change Detection</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -46,21 +48,23 @@ function ChangeDetection() {
       {results && (
         <div className="results">
           <h3>Results:</h3>
-          <div className="image-container">
-            <h4>Difference</h4>
-            <img src={`http://localhost:5000${results.difference}`} alt="Difference" />
-          </div>
-          <div className="image-container">
-            <h4>Change Map</h4>
-            <img src={`http://localhost:5000${results.changeMap}`} alt="Change Map" />
-          </div>
-          <div className="image-container">
-            <h4>Close Map</h4>
-            <img src={`http://localhost:5000${results.closeMap}`} alt="Close Map" />
-          </div>
-          <div className="image-container">
-            <h4>Open Map</h4>
-            <img src={`http://localhost:5000${results.openMap}`} alt="Open Map" />
+          <div className="image-grid">
+            <div className="image-container">
+              <ImageBox src={`http://localhost:5000${results.difference}`} alt="Difference" />
+              <p>Difference</p>
+            </div>
+            <div className="image-container">
+              <ImageBox src={`http://localhost:5000${results.changeMap}`} alt="Change Map" />
+              <p>Change Map</p>
+            </div>
+            <div className="image-container">
+              <ImageBox src={`http://localhost:5000${results.closeMap}`} alt="Close Map" />
+              <p>Close Map</p>
+            </div>
+            <div className="image-container">
+              <ImageBox src={`http://localhost:5000${results.openMap}`} alt="Open Map" />
+              <p>Open Map</p>
+            </div>
           </div>
         </div>
       )}

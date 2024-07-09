@@ -8,11 +8,31 @@ body, html {
 .App {
   width: 100%;
   font-family: Arial, sans-serif;
+  min-height: 100vh;
+  position: relative;
+}
+
+.bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('./images/satbg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  filter: brightness(0.7);
 }
 
 .content {
   padding: 20px;
   margin-top: 60px; /* Adjust this value based on your navbar height */
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 h1 {

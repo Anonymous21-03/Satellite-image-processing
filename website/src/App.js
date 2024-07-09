@@ -10,13 +10,16 @@ import Navbar from './Components/Navbar';
 function App() {
   return (
     <div className="App">
+      <div className="bg-container"></div>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/change-detection" element={<ChangeDetection />} />
-        <Route path="/land-cover-classification" element={<LandCoverClassification />} />
-        <Route path="/vegetation-monitoring" element={<VegetationMonitoring />} />
-      </Routes>
+      <div className="content">
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/change-detection" element={<ChangeDetection />} />
+          <Route path="/land-cover-classification" element={<LandCoverClassification />} />
+          <Route path="/vegetation-monitoring" element={<VegetationMonitoring />} />
+        </Routes>
+      </div>
     </div>
   );
 }
