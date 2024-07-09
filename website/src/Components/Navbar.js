@@ -26,7 +26,7 @@ const Navbar = () => {
           onMouseEnter={() => setShowDropdown(true)}
           onMouseLeave={() => setShowDropdown(false)}
         >
-          <Link to="/features">Features</Link>
+          Features
           {showDropdown && (
             <ul className="dropdown-menu">
               <li><Link to="/change-detection">Change Detection</Link></li>
