@@ -2,9 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import logo from "../images/download.jpeg"
+import GoogleSignIn from './GoogleSignIn';
 
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const handleLoginSuccess = (userObject) => {
+    setUser(userObject);
+  };
 
   return (
     <nav className="navbar">
@@ -30,6 +36,16 @@ const Navbar = () => {
           )}
         </li>
       </ul>
+      <div className="navbar-auth">
+        {user ? (
+          <span className="user-greeting">Welcome, {user.name}</span>
+        ) : (
+          <>
+            <GoogleSignIn onLoginSuccess={handleLoginSuccess} />
+            <Link to="/signup" className="auth-link signup">Sign Up</Link>
+          </>
+        )}
+      </div>
     </nav>
   );
 };
