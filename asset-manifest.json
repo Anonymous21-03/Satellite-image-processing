@@ -1,13 +1,18 @@
 {
   "files": {
-    "main.css": "/react-gh-pages/static/css/main.a32d6e5d.css",
-    "main.js": "/react-gh-pages/static/js/main.5de86297.js",
-    "index.html": "/react-gh-pages/index.html",
-    "main.a32d6e5d.css.map": "/react-gh-pages/static/css/main.a32d6e5d.css.map",
-    "main.5de86297.js.map": "/react-gh-pages/static/js/main.5de86297.js.map"
+    "main.css": "/Satellite-image-processing/static/css/main.65eefe2e.css",
+    "main.js": "/Satellite-image-processing/static/js/main.0b909da1.js",
+    "static/media/aboutus.jpeg": "/Satellite-image-processing/static/media/aboutus.0b8e0e0dc38ed39a77ef.jpeg",
+    "static/media/featurecard.jpeg": "/Satellite-image-processing/static/media/featurecard.bf57a660df8d6ac12807.jpeg",
+    "static/media/satimage.jpeg": "/Satellite-image-processing/static/media/satimage.89c30ba1e3ae1c09926f.jpeg",
+    "static/media/cosmos-1853491_1280.jpg": "/Satellite-image-processing/static/media/cosmos-1853491_1280.4f5a347198b6301816ca.jpg",
+    "static/media/satbg.jpg": "/Satellite-image-processing/static/media/satbg.f01bc0a5190a5da89465.jpg",
+    "index.html": "/Satellite-image-processing/index.html",
+    "main.65eefe2e.css.map": "/Satellite-image-processing/static/css/main.65eefe2e.css.map",
+    "main.0b909da1.js.map": "/Satellite-image-processing/static/js/main.0b909da1.js.map"
   },
   "entrypoints": [
-    "static/css/main.a32d6e5d.css",
-    "static/js/main.5de86297.js"
+    "static/css/main.65eefe2e.css",
+    "static/js/main.0b909da1.js"
   ]
 }
